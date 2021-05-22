@@ -2,7 +2,11 @@
 #define ch2 A2
 #define ch3 A3
 #define ch4 A4
+
+#define ENC3 2
+
 int16_t steering, throttle, roll, m1, m2, m3, m4; 
+int pos = 0;
 
 #include <AFMotor.h>
 AF_DCMotor motor4(4), motor3(3), motor2(2), motor1(1);
@@ -14,6 +18,8 @@ void setup() {
   pinMode(ch2, INPUT);
   pinMode(ch3, INPUT);
   pinMode(ch4, INPUT);
+  pinMode(ENC3, INPUT);
+  
   Serial.begin(9600);
   Serial.println("Start of the meccano wheel car");
 }
@@ -51,13 +57,13 @@ void loop() {
 
   m1 = limit(m1); m2 = limit(m2); m3 = limit(m3); m4 = limit(m4); //limit in range of -255 to +255
 
-  Serial.print(m1);
-  Serial.print(" \t ");
-  Serial.print(m2);
-  Serial.print(" \t ");
-  Serial.print(m3);
-  Serial.print(" \t ");
-  Serial.println(m4);
+//  Serial.print(m1);
+//  Serial.print(" \t ");
+//  Serial.print(m2);
+//  Serial.print(" \t ");
+//  Serial.print(m3);
+//  Serial.print(" \t ");
+//  Serial.println(m4);
 
   if (m1 >= 10){
     motor1.setSpeed(m1);
@@ -98,17 +104,25 @@ void loop() {
     motor4.run(BACKWARD);
   }
   else motor4.run(RELEASE);
+
+  //read Encoder
+  attachInterrupt(digitalPinToInterrupt(ENC3),readEncoder,RISING);
+  
 }
+
+
 
 
 
 // Private Functions*******************************************************************
 int limit (int value){ //limits value in range of -255 to +255
-  if (value >= 255){
-    return 255;
-  }
-  else if (value <= -255){
-    return -255;
-  }
-  return value;
+  if (value >= 255) return 255;
+  else if (value <= -255) return -255;
+  else return value;  
+}
+
+void readEncoder(){
+  if (m3 > 0) pos++;
+  else pos--; 
+  Serial.println(pos);
 }

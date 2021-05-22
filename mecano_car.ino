@@ -7,6 +7,9 @@
 
 int16_t steering, throttle, roll, m1, m2, m3, m4; 
 int pos = 0;
+long prevT = 0;
+float eprev = 0, eintegral = 0;
+
 
 #include <AFMotor.h>
 AF_DCMotor motor4(4), motor3(3), motor2(2), motor1(1);
@@ -28,14 +31,14 @@ void loop() {
   //-----------------------------------------------------------------------------
   //read PWM ********************************************************************
   //-----------------------------------------------------------------------------
-  
-  roll = pulseIn(ch1, HIGH);
-  throttle = pulseIn(ch2, HIGH);
-  steering = pulseIn(ch4, HIGH);
 
-  roll = map(roll, 995, 1980, -255, 255);
-  throttle = map(throttle, 995, 1988, 255, -255); //switched direction with 255, 0
-  steering = map(steering, 995, 1985, -255, 255);
+//  roll = pulseIn(ch1, HIGH);
+//  throttle = pulseIn(ch2, HIGH);
+//  steering = pulseIn(ch4, HIGH);
+//
+//  roll = map(roll, 995, 1980, -255, 255);
+//  throttle = map(throttle, 995, 1988, 255, -255); //switched direction with 255, 0
+//  steering = map(steering, 995, 1985, -255, 255);
 
 //  Serial.print(roll);
 //  Serial.print(" - ");
@@ -65,6 +68,36 @@ void loop() {
 //  Serial.print(" \t ");
 //  Serial.println(m4);
 
+  //for testing
+  m1=0; m2=0;m3=0;m4=0;
+
+  
+  float kp = 15, ki = 0, kd = 0.0;
+  int target = 200;
+  
+//time difference
+  long currT = micros();
+  float deltaT = ((float)(currT-prevT))/1.0e6;
+  prevT = currT;
+
+//error
+  int e = pos - target;
+
+//derivative
+  float dedt = (e-eprev)/deltaT;
+
+//integral
+  eintegral = eintegral + e*deltaT;
+
+//control signal
+  float u = kp*e + ki*eintegral + kd*dedt;
+
+  m3 = -u;
+  m3 = limit(m3);
+
+
+
+  
   if (m1 >= 10){
     motor1.setSpeed(m1);
     motor1.run(FORWARD);
@@ -107,7 +140,12 @@ void loop() {
 
   //read Encoder
   attachInterrupt(digitalPinToInterrupt(ENC3),readEncoder,RISING);
-  
+
+
+  eprev = e;
+  Serial.print(target);
+  Serial.print(" ");
+  Serial.println(pos);
 }
 
 
@@ -124,5 +162,5 @@ int limit (int value){ //limits value in range of -255 to +255
 void readEncoder(){
   if (m3 > 0) pos++;
   else pos--; 
-  Serial.println(pos);
+  //Serial.println(pos);
 }

@@ -72,9 +72,14 @@ void loop() {
   m1=0; m2=0;m3=0;m4=0;
 
   
-  float kp = 15, ki = 0, kd = 0.0;
-  int target = 200;
+  float kp = 15, ki = 0., kd = 0.0;
   
+  static int i = 0;
+  static float target = 0.0;
+  target = sin(i * DEG_TO_RAD)*250;
+  i++;
+  if (i>360) i = 0;
+    
 //time difference
   long currT = micros();
   float deltaT = ((float)(currT-prevT))/1.0e6;
@@ -146,10 +151,10 @@ void loop() {
   Serial.print(target);
   Serial.print(" ");
   Serial.println(pos);
+  delay(80); //to give it time to adjust 
+
+
 }
-
-
-
 
 
 // Private Functions*******************************************************************

@@ -1,3 +1,5 @@
+#include "my_functions.h"
+
 #define ch1 A1
 #define ch2 A2
 #define ch3 A3
@@ -158,12 +160,8 @@ void loop() {
 
 
 // Private Functions*******************************************************************
-int limit (int value){ //limits value in range of -255 to +255
-  if (value >= 255) return 255;
-  else if (value <= -255) return -255;
-  else return value;  
-}
 
+//interrupt function
 void readEncoder(){
   if (m3 > 0) pos++;
   else pos--; 

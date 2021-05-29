@@ -10,7 +10,6 @@
 
 //radio
 int16_t steering, throttle, roll, m1, m2, m3, m4; 
-//rotary encoder
 
 
 #include <AFMotor.h>
@@ -96,25 +95,27 @@ void loop() {
   
 
   Serial.println((String)"ENC1: " + ENC1 + "\t ENC2: " + ENC2 + "\tENC3: " + ENC3 + "\t ENC4: " + ENC4);
-
+  //Serial.println(PB2);
 
 }
 
 
-// Private Functions*******************************************************************
+
+
+// Interrupt Functions*******************************************************************
 
 //ISR for port B
 ISR (PCINT0_vect){ //since pin 9 and 10 are both at port B, check which one changed
-  static bool prev1 = digitalRead(10), prev4 = digitalRead(9);
-  if (digitalRead(9) != prev4){ //check for falling or rising 
+  static bool prev1 = redPin10, prev4 = redPin9;
+  if (redPin9 != prev4){ //check for falling or rising 
     if (m4 > 0) ENC4++;   //check wether forward or backward rotation
     else ENC4--;
-    prev4 = digitalRead(9);
+    prev4 = redPin9;
   }
-  else if (digitalRead(10) != prev1){ //check for falling or rising 
+  else if (redPin10 != prev1){ //check for falling or rising 
     if (m1 > 0) ENC1++;
     else ENC1--;
-    prev1 = digitalRead(10);
+    prev1 = redPin10;
   }
 }
 

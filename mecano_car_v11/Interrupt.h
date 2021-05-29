@@ -1,9 +1,13 @@
 #ifndef INTERRUPT_H
 #define INTERRUPT_H
 
-int ENC1 = 0, ENC2 = 0, ENC3 = 0, ENC4 = 0;
 
-//interrupt function
+//Macros for digitalRead()
+#define redPin9 (PINB & (1 << PB1)) >> PB1
+#define redPin10 (PINB & (1 << PB2)) >> PB2
+
+
+int ENC1 = 0, ENC2 = 0, ENC3 = 0, ENC4 = 0;
 
 void init_interrupts(void){
   PCICR  |= (1 << PCIE0); //Enable Port B

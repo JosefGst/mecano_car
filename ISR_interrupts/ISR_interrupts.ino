@@ -1,5 +1,6 @@
 int ENC1 = 0, ENC2 = 0, ENC3 = 0, ENC4 = 0;
-bool ENC1PIN = 0, ENC4PIN = 0;
+
+
 
 void setup() {
   PCICR  |= (1 << PCIE0); //Enable Port B
@@ -22,14 +23,15 @@ void loop() {
 
 //ISR for port B
 ISR (PCINT0_vect){ //since pin 9 and 10 are both at port B, check which one changed
-  if (bit_is_clear(PINB, PB1)) //check for falling or rising Pin 9
-    ENC1++;
-  else if (bit_is_set(PINB, PB1))
-    ENC1++;
-  if (bit_is_clear(PINB, PB2)) //Pin 10
+  static bool prev1 = digitalRead(10), prev4 = digitalRead(9);
+  if (digitalRead(9) != prev4){ //check for falling or rising 
     ENC4++;
-  else if (bit_is_set(PINB, PB2))
-    ENC4++;
+    prev4 = digitalRead(9);
+  }
+  else if (digitalRead(10) != prev1){ //check for falling or rising 
+    ENC1++;
+    prev1 = digitalRead(10);
+  }
 }
 
 //ISR for port C
